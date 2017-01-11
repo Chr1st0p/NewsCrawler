@@ -17,7 +17,7 @@ class straitsTimesNews:
         self.createTable()
 
     def start(self):
-        for i in range(20,-1,-1):
+        for i in range(20, -1, -1):
             self.getHtml(i)
 
     def getHtml(self, iters):
@@ -73,11 +73,15 @@ class straitsTimesNews:
             content = ''
             keyword = ''
         else:
+            # noinspection PyBroadException
             try:
                 keyword, content = self.getContentKeyword(link)
             except:
+                keyword = ''
+                content = ''
                 print "No key word or content matches"
 
+        # noinspection PyBroadException
         try:
             date = matchD.find(name='div', attrs={'class', 'node-postdate'}).get_text()
         except:
