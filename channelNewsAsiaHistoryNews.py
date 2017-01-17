@@ -4,9 +4,8 @@ import mysql.connector
 from utils.config import bcolors, DbConfig
 
 
-class todayNews:
-    url = 'http://www.todayonline.com/singapore'
-    pageDownStr = '?page='
+class channelNewsAsia:
+    url = 'http://www.channelnewsasia.com/archives/3636/Singapore/twoyears/latest/'
 
     def __init__(self):
         try:
@@ -21,10 +20,7 @@ class todayNews:
         self.cnn.close()
 
     def getHtml(self, iters):
-        if iters == 0:
-            targeturl = self.url
-        else:
-            targeturl = self.url + self.pageDownStr + str(iters)
+        targeturl = self.url + str(iters)
         head = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'}
         print 'Start Get ' + str(iters) + 'th Page TodayOnline News'

@@ -17,8 +17,9 @@ class straitsTimesNews:
         self.createTable()
 
     def start(self):
-        for i in range(20, -1, -1):
+        for i in range(2, -1, -1):
             self.getHtml(i)
+        self.cnn.close()
 
     def getHtml(self, iters):
         if iters == 0:
@@ -27,7 +28,7 @@ class straitsTimesNews:
             targeturl = self.url + self.pageDownStr + str(iters)
         head = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'}
-        print 'Start Get ' + str(iters) + 'th Page News'
+        print 'Start Get ' + str(iters) + 'th Page StraitsTimes News'
         html = requests.get(url=targeturl, headers=head)
         soup = BeautifulSoup(html.text, 'lxml')
 
@@ -35,11 +36,11 @@ class straitsTimesNews:
         matchDate = soup.find_all(name='div', attrs={'class', 'media-footer'})
 
         # separete the title, link, date
-        for i in range(len(matchDate)):
-            self.getNewsInfo(iters, matchTittleLink[i], matchDate[i], i)
+        for i in range(len(matchDate) - 1, -1, -1):
+            self.parseHtml(iters, matchTittleLink[i], matchDate[i], i)
             # self.paraseNews(matchTittleLink[i], matchDate[i])
 
-    def paraseNews(self, TitLink, Date):
+    def paraseNewsDebug(self, TitLink, Date):
         try:
             print TitLink.find(name='a').get_text()
         except:
@@ -53,7 +54,7 @@ class straitsTimesNews:
         except:
             print "None Date Match"
 
-    def getNewsInfo(self, iters, matchTL, matchD, i):
+    def parseHtml(self, iters, matchTL, matchD, i):
         # news title, link, date,
         # noinspection PyBroadException
         try:
@@ -75,7 +76,7 @@ class straitsTimesNews:
         else:
             # noinspection PyBroadException
             try:
-                keyword, content = self.getContentKeyword(link)
+                keyword, content = self.parseContentKeyword(link)
             except:
                 keyword = ''
                 content = ''
@@ -88,9 +89,9 @@ class straitsTimesNews:
             print bcolors.WARNING + 'The ' + str(iters) + 'th Page ' + str(i) + 'th date Error' + bcolors.ENDC
             date = ''
         data = (iters, title, link, date, keyword, content)
-        self.insertNews(data)
+        self.insertData(data)
 
-    def insertNews(self, data):
+    def insertData(self, data):
         cursor = self.cnn.cursor()
         sql_insert = 'INSERT INTO StraitsTimesHistoryNews (page, title, link, postdate,keyword,content) VALUES (%s, %s, %s, %s,%s,%s)'
         try:
@@ -101,15 +102,19 @@ class straitsTimesNews:
             self.cnn.commit()
             cursor.close()
 
-    def getContentKeyword(self, newsurl):
+    def parseContentKeyword(self, newsurl):
         head = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'}
         html = requests.get(url=newsurl, headers=head)
-        keyword = re.findall(r".*\"keyword\":\"(.*?)\",.*", html.text)
-        soup = BeautifulSoup(html.text, 'lxml')
-        matchContent = soup.find_all(name='p')
+        try:
+            keyword = re.findall(r".*\"keyword\":\"(.*?)\",.*", html.text)
+            soup = BeautifulSoup(html.text, 'lxml')
+            matchContent = soup.find_all(name='p')
+        except:
+            print "Keyword or content match Error"
+            return '', ''
         content = ''
-        for i in range(len(matchContent) - 4):
+        for i in range(len(matchContent) - 5):
             content += matchContent[i].get_text()
         return keyword[0], content
 
