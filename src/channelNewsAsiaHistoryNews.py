@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import mysql.connector
-from utils.config import bcolors, DbConfig
+from utils.config import bcolors, DbConfig,requestrequestHeader
 
 
 class channelNewsAsia:
@@ -21,10 +21,8 @@ class channelNewsAsia:
 
     def getHtml(self, iters):
         targeturl = self.url + str(iters)
-        head = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'}
         print 'Start Get ' + str(iters) + 'th Page TodayOnline News'
-        html = requests.get(url=targeturl, headers=head)
+        html = requests.get(url=targeturl, requestHeader=requestHeader.browserHeader)
         soup = BeautifulSoup(html.text, 'lxml')
         # delete the div with class=panel-panel right,
         # without this step, the result in next step will be class=panel-panel right + class=right;
@@ -69,7 +67,8 @@ class channelNewsAsia:
         data = (iters, title, link, date, abstract)
         self.insertData(data)
 
-    def parserDebug(self, news):
+    @staticmethod
+    def parserDebug(news):
         print news.find(name='h2').get_text()
         print news.find(name='h2').find(name='a').get('href')
         print news.find(name='div', attrs={'class', 'timeago-highlight'}).get_text()

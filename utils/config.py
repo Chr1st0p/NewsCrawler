@@ -12,8 +12,15 @@ class bcolors:
 class DbConfig:
     newsDataConfig = {'host': '127.0.0.1',
                       'user': 'root',
-                      
+                      'password': 'qwerty123456',
                       'port': 3306,
                       'database': 'newsdata',
                       'charset': 'utf8'
                       }
+
+
+class requestHeader:
+    browserHeader = {
+        'User-Agent': "Mozilla/5.0 (Windows NT 6.3; Win64; x64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 "
+                      "Safari/537.36"}

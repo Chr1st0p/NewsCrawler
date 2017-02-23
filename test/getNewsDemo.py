@@ -1,14 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+from utils.config import requestHeader
 
 
 def getNewsHtml(targetUrl):
-    # header;
-    head = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'}
+    # requestHeader.browserHeaderer;
     print 'Start Get News:'
-    html = requests.get(targetUrl, headers=head)
+    html = requests.get(targetUrl, headers=requestHeader.browserHeader)
     soup = BeautifulSoup(html.text, 'lxml')
 
     # delete the div with class=panel-panel right,
@@ -35,9 +34,9 @@ def paraseNews(news):
 
 
 def getContentKeyword(newsurl):
-    head = {
+    requestHeader.browserHeader = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'}
-    html = requests.get(url=newsurl, headers=head)
+    html = requests.get(url=newsurl, headers=requestHeader.browserHeader)
     print re.findall(r".*\"keyword\":\"(.*?)\",.*", html.text)
     soup = BeautifulSoup(html.text, 'lxml')
     content = soup.find_all(name='p')
